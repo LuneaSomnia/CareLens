@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for the snowflake theme */
+body {
+  background: linear-gradient(135deg, #e0f7fa, #a8d0e6);
+  font-family: 'Inter', sans-serif;
+}
