@@ -1,7 +1,10 @@
+import dynamic from 'next/dynamic'
 import Layout from '../components/Layout'
-import Snowfall from '../components/Snowfall'
 import FrostButton from '../components/FrostButton'
 import { motion } from 'framer-motion'
+
+// Remove the static import and use dynamic import instead
+const Snowfall = dynamic(() => import('../components/Snowfall'), { ssr: false })
 
 export default function Home() {
   return (
