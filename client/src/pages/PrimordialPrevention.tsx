@@ -14,8 +14,10 @@ import {
   MapPin,
   Dumbbell,
   ShoppingCart,
-  Users
+  Users,
+  Calendar
 } from "lucide-react";
+import MapComponent from "@/components/MapComponent";
 
 export default function PrimordialPrevention() {
   // Educational modules data
@@ -137,32 +139,68 @@ export default function PrimordialPrevention() {
           <CardTitle>Local Wellness Resources</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-64 md:h-80 bg-neutral-50 rounded-lg relative overflow-hidden">
-            <div className="absolute inset-0 flex items-center justify-center bg-neutral-900 bg-opacity-50">
-              <div className="text-center text-white p-4">
-                <MapPin className="h-16 w-16 mx-auto" />
-                <p className="mt-2 font-medium text-lg">Interactive Map Coming Soon</p>
-                <p className="text-sm">Discover parks, fitness centers, farmers markets and more in your area</p>
-              </div>
-            </div>
+          <div className="h-64 md:h-80 rounded-lg relative overflow-hidden border border-neutral-200">
+            <MapComponent height="100%" />
           </div>
           <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <Button className="flex items-center justify-center">
+            <Button variant="outline" className="flex items-center justify-center">
               <MapPin className="h-5 w-5 mr-2" />
               Parks
             </Button>
-            <Button className="flex items-center justify-center">
+            <Button variant="outline" className="flex items-center justify-center">
               <Dumbbell className="h-5 w-5 mr-2" />
               Fitness Centers
             </Button>
-            <Button className="flex items-center justify-center">
+            <Button variant="outline" className="flex items-center justify-center">
               <ShoppingCart className="h-5 w-5 mr-2" />
               Farmers Markets
             </Button>
-            <Button className="flex items-center justify-center">
+            <Button variant="outline" className="flex items-center justify-center">
               <Users className="h-5 w-5 mr-2" />
               Community Events
             </Button>
+          </div>
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="bg-emerald-50 p-3 rounded-md border border-emerald-200">
+              <h4 className="font-medium text-sm flex items-center">
+                <MapPin className="h-4 w-4 text-emerald-600 mr-2" />
+                Closest Resources
+              </h4>
+              <ul className="mt-2 space-y-2">
+                <li className="text-sm flex justify-between">
+                  <span>Green Hills Park</span>
+                  <span className="text-emerald-600 font-medium">0.6 miles</span>
+                </li>
+                <li className="text-sm flex justify-between">
+                  <span>Community Yoga Event</span>
+                  <span className="text-emerald-600 font-medium">0.8 miles</span>
+                </li>
+                <li className="text-sm flex justify-between">
+                  <span>Weekend Farmers Market</span>
+                  <span className="text-emerald-600 font-medium">1.2 miles</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-amber-50 p-3 rounded-md border border-amber-200">
+              <h4 className="font-medium text-sm flex items-center">
+                <Calendar className="h-4 w-4 text-amber-600 mr-2" />
+                Upcoming Events
+              </h4>
+              <ul className="mt-2 space-y-2">
+                <li className="text-sm flex justify-between">
+                  <span>Health Fair</span>
+                  <span className="text-amber-600 font-medium">Tomorrow</span>
+                </li>
+                <li className="text-sm flex justify-between">
+                  <span>Nutrition Workshop</span>
+                  <span className="text-amber-600 font-medium">3 days</span>
+                </li>
+                <li className="text-sm flex justify-between">
+                  <span>5K Community Run</span>
+                  <span className="text-amber-600 font-medium">1 week</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </CardContent>
       </Card>

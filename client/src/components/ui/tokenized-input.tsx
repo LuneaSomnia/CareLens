@@ -1,7 +1,7 @@
-import React, { useState, KeyboardEvent, useRef, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import React, { useState, useRef, useEffect } from 'react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 
 export interface TokenizedInputProps {
   placeholder?: string;
@@ -13,147 +13,140 @@ export interface TokenizedInputProps {
 }
 
 export function TokenizedInput({
-  placeholder = "Add...",
-  tokens,
+  placeholder = 'Add tags...',
+  tokens = [],
   suggestions = [],
   onTokensChange,
-  className,
-  disabled = false,
+  className = '',
+  disabled = false
 }: TokenizedInputProps) {
-  const [inputValue, setInputValue] = useState("");
-  const [activeSuggestion, setActiveSuggestion] = useState(0);
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (inputValue) {
-      const filtered = suggestions.filter(
-        suggestion => suggestion.toLowerCase().includes(inputValue.toLowerCase())
-      );
-      setFilteredSuggestions(filtered);
-      setShowSuggestions(filtered.length > 0);
-      setActiveSuggestion(0);
-    } else {
-      setShowSuggestions(false);
+    if (inputValue.trim() === '') {
+      setFilteredSuggestions([]);
+      return;
     }
-  }, [inputValue, suggestions]);
+    
+    const filtered = suggestions.filter(suggestion => 
+      suggestion.toLowerCase().includes(inputValue.toLowerCase()) && 
+      !tokens.includes(suggestion)
+    );
+    setFilteredSuggestions(filtered);
+  }, [inputValue, suggestions, tokens]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node) &&
+          inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
+    if (e.target.value.trim() !== '') {
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    // Handle Enter key to add a token
-    if (e.key === "Enter") {
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && inputValue.trim() !== '') {
       e.preventDefault();
-      
-      if (showSuggestions && filteredSuggestions[activeSuggestion]) {
-        addToken(filteredSuggestions[activeSuggestion]);
-      } else if (inputValue.trim()) {
-        addToken(inputValue.trim());
+      if (!tokens.includes(inputValue.trim())) {
+        onTokensChange([...tokens, inputValue.trim()]);
       }
-    }
-    // Handle Backspace to remove the last token
-    else if (e.key === "Backspace" && !inputValue && tokens.length > 0) {
-      const newTokens = [...tokens];
-      newTokens.pop();
-      onTokensChange(newTokens);
-    }
-    // Handle arrow keys for suggestion navigation
-    else if (e.key === "ArrowDown" && showSuggestions) {
-      e.preventDefault();
-      setActiveSuggestion(prev => 
-        prev < filteredSuggestions.length - 1 ? prev + 1 : 0
-      );
-    }
-    else if (e.key === "ArrowUp" && showSuggestions) {
-      e.preventDefault();
-      setActiveSuggestion(prev => 
-        prev > 0 ? prev - 1 : filteredSuggestions.length - 1
-      );
+      setInputValue('');
+      setShowSuggestions(false);
+    } else if (e.key === 'Backspace' && inputValue === '' && tokens.length > 0) {
+      onTokensChange(tokens.slice(0, -1));
     }
   };
 
-  const addToken = (token: string) => {
-    if (token && !tokens.includes(token)) {
-      onTokensChange([...tokens, token]);
+  const handleRemoveToken = (index: number) => {
+    const newTokens = [...tokens];
+    newTokens.splice(index, 1);
+    onTokensChange(newTokens);
+  };
+
+  const handleSelectSuggestion = (suggestion: string) => {
+    if (!tokens.includes(suggestion)) {
+      onTokensChange([...tokens, suggestion]);
     }
-    setInputValue("");
+    setInputValue('');
     setShowSuggestions(false);
     inputRef.current?.focus();
   };
 
-  const removeToken = (indexToRemove: number) => {
-    const newTokens = tokens.filter((_, index) => index !== indexToRemove);
-    onTokensChange(newTokens);
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    addToken(suggestion);
-  };
-
   const handleClickOutside = (e: MouseEvent) => {
-    if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+    if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
       setShowSuggestions(false);
     }
   };
 
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   return (
-    <div className={cn("relative", className)} ref={containerRef}>
-      <div className="flex flex-wrap gap-2 p-2 border rounded-md bg-white focus-within:ring-2 focus-within:ring-primary focus-within:border-transparent">
+    <div className={`relative ${className}`}>
+      <div className="flex flex-wrap items-center gap-2 p-2 border rounded-md bg-white">
         {tokens.map((token, index) => (
-          <div
-            key={index}
-            className="flex items-center bg-teal-50 rounded-full px-2 py-1 text-sm"
-          >
-            <span className="mr-1">{token}</span>
-            {!disabled && (
-              <button
-                type="button"
-                onClick={() => removeToken(index)}
-                className="text-neutral-600 hover:text-neutral-900"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            )}
-          </div>
+          <Badge key={index} variant="secondary" className="gap-1 px-2 py-1">
+            {token}
+            <button 
+              type="button" 
+              onClick={() => handleRemoveToken(index)}
+              disabled={disabled}
+              className="ml-1 focus:outline-none"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </Badge>
         ))}
-        {!disabled && (
-          <Input
-            ref={inputRef}
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder={tokens.length ? "" : placeholder}
-            className="flex-grow min-w-[100px] border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-8"
-          />
-        )}
+        <Input
+          ref={inputRef}
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          onFocus={() => inputValue.trim() !== '' && setShowSuggestions(true)}
+          placeholder={tokens.length === 0 ? placeholder : ''}
+          className="flex-1 min-w-[120px] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 h-6"
+          disabled={disabled}
+        />
       </div>
-      {showSuggestions && (
-        <ul className="absolute z-10 bg-white mt-1 w-full border rounded-md shadow-md max-h-60 overflow-auto">
+      
+      {showSuggestions && filteredSuggestions.length > 0 && (
+        <div 
+          ref={suggestionsRef}
+          className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto"
+        >
           {filteredSuggestions.map((suggestion, index) => (
-            <li
+            <div
               key={index}
-              className={cn(
-                "px-4 py-2 cursor-pointer hover:bg-neutral-50",
-                index === activeSuggestion && "bg-neutral-100"
-              )}
-              onClick={() => handleSuggestionClick(suggestion)}
+              className="px-3 py-2 cursor-pointer hover:bg-neutral-100"
+              onClick={() => handleSelectSuggestion(suggestion)}
             >
               {suggestion}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
