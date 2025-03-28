@@ -55,13 +55,6 @@ The platform features comprehensive user profiles that include:
 - **Lifestyle Data**: Exercise habits, diet, sleep patterns, and more
 - **Settings**: Notification preferences and privacy controls
 
-## Technical Features
-
-- **Interactive Maps**: Built with Leaflet.js for location-based health resources
-- **Tokenized Input**: Typeahead/autocomplete functionality for user input
-- **Data Visualization**: Charts and graphs for health metrics
-- **Responsive Design**: Mobile and desktop-friendly interface
-
 ## Technology Stack
 
 - **Frontend**: React with TypeScript
