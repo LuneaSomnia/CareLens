@@ -1,8 +1,7 @@
-# CareLens: Comprehensive Preventive Healthcare Platform
+# CareLens
+Your health,in focus 🔎
 
-CareLens is a web application designed to enhance preventive care across multiple levels: primordial, primary, secondary, tertiary, and quaternary prevention. The platform empowers users to take control of their health through monitoring, education, screening coordination, and protection from over-medicalization.
-
-![CareLens Logo](https://via.placeholder.com/150x50?text=CareLens)
+CareLens is a personalized web application whose main purpose is to enhance preventive healthcare.
 
 ## Features
 
@@ -58,24 +57,6 @@ The platform features comprehensive user profiles that include:
 - **Data Visualization**: Charts and graphs for health metrics
 - **Responsive Design**: Mobile and desktop-friendly interface
 
-## Installation and Setup
-
-To run the CareLens application locally:
-
-```bash
-# Clone the repository
-git clone [repository-url]
-cd carelens
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm run dev
-```
-
-The application will be available at `http://localhost:5000`.
-
 ## Technology Stack
 
 - **Frontend**: React with TypeScript
@@ -106,17 +87,3 @@ carelens/
 │   └── schema.ts           # Data schema definitions
 └── package.json            # Project dependencies
 ```
-
-## Contributing
-
-Contributions to CareLens are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgements
-
-- Built with [Replit](https://replit.com/)
-- Maps powered by [Leaflet.js](https://leafletjs.com/)
-- UI components from [ShadCN/UI](https://ui.shadcn.com/)
