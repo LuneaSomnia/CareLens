@@ -46,7 +46,7 @@ This is aimed at protecting patients from unnecessary or harmful medical interve
 - **Adverse event**:  This sub feature helps users catalog the side effects they may have from using particular drugs. They get to input the name of the medication, the side effect they experienced, the severity, when it started, how long it lasted and and additional notes they may want to relay. This helps keep the community informed about a certain drug and what they may expect to experience when using it. And below that there's a community insights tab which shows the main side effects that result from certain drugs according to those who have used it. The data from these reports are made anonymous.
 - **Educational Resources**: This sub feature contains a list of educational resources about quaternary care and why it's important. This helps to increase patient awareness and reinforce the value of critical, measured medical decision making. It includes different resources, ratings of how many people found it helpful and a duration as to how long it may take to go through it. There are also different topics highlighted below with the number of resources available to that particular resource shown on the right side.
 
-## User Profile
+### 6. User Profile
 
 The platform features comprehensive user profiles that include:
 
