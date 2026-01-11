@@ -1,0 +1,5 @@
+{
+  "name": "CareLens",
+  "description": "A 3D preventive care application featuring an AI-driven prevention dashboard, symptom analysis, and personalized management plans.",
+  "requestFramePermissions": []
+}
