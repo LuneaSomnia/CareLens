@@ -1,0 +1,145 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.userId;
+    }
+    
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+    
+    function userIdUnchanged() {
+      return !('userId' in request.resource.data) || request.resource.data.userId == request.auth.uid;
+    }
+    
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+    
+    function userIdNotModified() {
+      return !('userId' in request.resource.data) || request.resource.data.userId == resource.data.userId;
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function isValidStringLength(field, minLen, maxLen) {
+      return request.resource.data[field] is string &&
+             request.resource.data[field].size() >= minLen &&
+             request.resource.data[field].size() <= maxLen;
+    }
+
+    function isValidOptionalStringLength(field, minLen, maxLen) {
+      return !(field in request.resource.data) || 
+             (request.resource.data[field] is string &&
+              request.resource.data[field].size() >= minLen &&
+              request.resource.data[field].size() <= maxLen);
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == "raysaga429@gmail.com";
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    
+    function isValidUserProfile() {
+      return hasRequiredFields(['uid', 'name', 'email']) &&
+             isValidStringLength('uid', 1, 100) &&
+             isValidStringLength('name', 1, 100) &&
+             isValidStringLength('email', 1, 150) &&
+             isValidOptionalStringLength('phoneNumber', 0, 50) &&
+             isValidOptionalStringLength('nationalId', 0, 50) &&
+             (!( 'pushNotificationsEnabled' in request.resource.data ) || request.resource.data.pushNotificationsEnabled is bool);
+    }
+    
+    function isValidRecommendation() {
+      return hasRequiredFields(['userId', 'category', 'text', 'createdAt', 'expiresAt']) &&
+             isValidStringLength('userId', 1, 100) &&
+             request.resource.data.category in ['PREVENTION', 'MANAGEMENT', 'ANALYSIS'] &&
+             isValidStringLength('text', 1, 10000) &&
+             request.resource.data.createdAt is string &&
+             request.resource.data.expiresAt is string;
+    }
+    
+    function isValidProcedure() {
+      return hasRequiredFields(['userId', 'userName', 'userPhone', 'userNationalId', 'type', 'name', 'facility', 'completed', 'createdAt']) &&
+             isValidStringLength('userId', 1, 100) &&
+             isValidStringLength('userName', 1, 150) &&
+             isValidStringLength('userPhone', 1, 50) &&
+             isValidStringLength('userNationalId', 1, 50) &&
+             request.resource.data.type in ['VACCINE', 'TEST', 'SCREENING'] &&
+             isValidStringLength('name', 1, 200) &&
+             isValidStringLength('facility', 1, 200) &&
+             isValidOptionalStringLength('doctorName', 1, 200) &&
+             isValidOptionalStringLength('doctorId', 1, 200) &&
+             isValidOptionalStringLength('results', 1, 10000) &&
+             isValidOptionalStringLength('procedureDate', 1, 50) &&
+             isValidOptionalStringLength('procedureTime', 1, 50) &&
+             request.resource.data.completed is bool &&
+             request.resource.data.createdAt is string;
+    }
+    
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && isValidUserProfile() && uidUnchanged();
+      allow update: if isOwner(userId) && isValidUserProfile() && uidNotModified();
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+    
+    match /users/{userId}/medicalRecords/{recordId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isAuthenticated(); // Doctors can create
+      allow update: if isAdmin();
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    match /users/{userId}/preventionData/{docId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    match /users/{userId}/analysisData/{docId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+
+    match /users/{userId}/managementData/{docId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+    
+    match /recommendations/{recommendationId} {
+      allow read: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && isValidRecommendation();
+      allow update: if isDocOwner() && isValidRecommendation() && userIdNotModified();
+      allow delete: if isDocOwner() || isAdmin();
+    }
+    
+    match /procedures/{procedureId} {
+      allow get: if true; // Allow doctors to search by ID
+      allow list: if isDocOwner() || isAdmin();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid && isValidProcedure();
+      allow update: if isAuthenticated() && isValidProcedure() && userIdNotModified();
+      allow delete: if isDocOwner() || isAdmin();
+    }
+  }
+}

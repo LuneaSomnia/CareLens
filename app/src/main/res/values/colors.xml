@@ -1,0 +1,7 @@
+<resources>
+    <color name="background_dark">#050505</color>
+    <color name="neon_cyan">#00F0FF</color>
+    <color name="neon_blue">#2D5BFF</color>
+    <color name="neon_green">#00FF94</color>
+    <color name="neon_pink">#FF0099</color>
+</resources>

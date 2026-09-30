@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CareLens</string>
+    <string name="upgrade_to_pro">Upgrade to Pro</string>
+    <string name="settings">Settings</string>
+</resources>

@@ -1,0 +1,16 @@
+{
+  "name": "CareLens",
+  "short_name": "CareLens",
+  "description": "A 3D preventive care application featuring an AI-driven prevention dashboard, symptom analysis, and personalized management plans.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050505",
+  "theme_color": "#00FF94",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3004/3004458.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
